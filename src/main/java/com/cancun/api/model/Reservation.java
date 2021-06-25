@@ -2,8 +2,6 @@ package com.cancun.api.model;
 
 import javax.persistence.*;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
