@@ -1,0 +1,1 @@
+# Cancun Hotel API
