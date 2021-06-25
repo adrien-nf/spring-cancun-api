@@ -7,7 +7,37 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ApiApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void testReservationIsMaximumThreeDaysLong() {
+		//
 	}
 
+	@Test
+	void testReservationIsMaximumThirtyDaysInAdvance() {
+		//
+	}
+
+	@Test
+	void testReservationStartsNextDayOfBooking() {
+		//
+	}
+
+	@Test
+	void testUserCanCheckRoomAvailability() {
+		//
+	}
+	
+	@Test
+	void testUserCanPlaceReservation() {
+		//
+	}
+
+	@Test
+	void testUserCanCancelReservation() {
+		//
+	}
+	
+	@Test
+	void testUserCanUpdateReservation() {
+		//
+	}
 }
