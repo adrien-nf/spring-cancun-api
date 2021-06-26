@@ -9,6 +9,7 @@ import com.cancun.api.model.Reservation;
 import com.cancun.api.model.Room;
 import com.cancun.api.repository.ReservationRepository;
 import com.cancun.api.repository.RoomRepository;
+import com.cancun.api.service.RoomService;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -22,10 +23,6 @@ import java.time.temporal.ChronoUnit;
 @RestController
 @RequestMapping("/api/rooms")
 public class RoomController {
-	static int MAX_RESERVATION_DAYS = 3;
-	static int MIN_DAYS_BEFORE_RESERVATION = 1;
-	static int MAX_DAYS_BEFORE_RESERVATION = 30;
-	
 	@Autowired
     private RoomRepository roomRepository;
 	
@@ -48,18 +45,7 @@ public class RoomController {
         	return ResponseEntity.notFound().build();
         }
         
-        if(!room.get().isAvailableForReservation(startDate, endDate)) {
-        	return ResponseEntity.unprocessableEntity().build();
-        }
-        
-        LocalDate todayDate = LocalDate.now();
-        long reservationDuration = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-        long daysBeforeReservationStarts = ChronoUnit.DAYS.between(todayDate, startDate);
-
-        if(reservationDuration > MAX_RESERVATION_DAYS
-        		|| daysBeforeReservationStarts < MIN_DAYS_BEFORE_RESERVATION
-        		|| daysBeforeReservationStarts > MAX_DAYS_BEFORE_RESERVATION
-        		|| startDate.isAfter(endDate)) {
+        if(!RoomService.validateRoomUpdateParameters(room.get(), startDate, endDate)) {
         	return ResponseEntity.unprocessableEntity().build();
         }
         
@@ -103,12 +89,39 @@ public class RoomController {
         	return ResponseEntity.notFound().build();
         }
         
-        if(reservation.get().getRoom().getId() != room.get().getId()) {
+        if(!reservation.get().belongsToRoom(room.get())) {
         	return ResponseEntity.unprocessableEntity().build();
         }
         
         reservationRepository.deleteById(reservation.get().getId());
         
         return ResponseEntity.ok().body(room.get().unbook(reservation.get()));
+    }
+    
+    @PatchMapping("/{id}/{reservationId}")
+    public ResponseEntity<Room> rebookRoom(
+    		@PathVariable(value = "id") long id,
+    		@PathVariable(value = "reservationId") long reservationId,
+    		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "start_date") LocalDate startDate, 
+    		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "end_date") LocalDate endDate) {
+        Optional<Room> room = roomRepository.findById(id);
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        
+        if(room.isEmpty() || reservation.isEmpty()) {
+        	return ResponseEntity.notFound().build();
+        }
+        
+        room.get().unbook(reservation.get());
+        if(!reservation.get().belongsToRoom(room.get())
+        		|| !RoomService.validateRoomUpdateParameters(room.get(), startDate, endDate)) {
+        	return ResponseEntity.unprocessableEntity().build();
+        }
+        
+        Reservation newReservation = reservation.get();
+        newReservation.setStartDate(startDate);
+        newReservation.setEndDate(endDate);
+        reservationRepository.save(newReservation);
+        
+        return ResponseEntity.ok().body(room.get().book(newReservation));
     }
 }

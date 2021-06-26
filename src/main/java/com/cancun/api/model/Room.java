@@ -58,6 +58,6 @@ public class Room {
 	
 	@Override
 	public boolean equals(Object obj) {
-		return obj == null || this.getId() == ((Room) obj).getId();
+		return obj != null && this.getId() == ((Room) obj).getId();
 	}
 }

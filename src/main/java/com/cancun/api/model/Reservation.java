@@ -61,4 +61,13 @@ public class Reservation {
 	public boolean isOverlappingDates(LocalDate startDate, LocalDate endDate) {
 		return !(this.endDate.isBefore(startDate) || this.startDate.isAfter(endDate));
 	}
+	
+	public boolean belongsToRoom(Room room) {
+		return room.equals(this.getRoom());
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && this.getId() == ((Reservation) obj).getId();
+	}
 }
