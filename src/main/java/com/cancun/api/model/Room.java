@@ -46,8 +46,18 @@ public class Room {
 		return reservations.stream().filter(r -> r.isOverlappingDates(startDate, endDate)).count() == 0;
 	}
 	
-	public Room addReservation(Reservation r) {
+	public Room book(Reservation r) {
 		this.reservations.add(r);
 		return this;
+	}
+	
+	public Room unbook(Reservation r) {
+		this.reservations.remove(reservations.indexOf(r));
+		return this;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return obj == null || this.getId() == ((Room) obj).getId();
 	}
 }

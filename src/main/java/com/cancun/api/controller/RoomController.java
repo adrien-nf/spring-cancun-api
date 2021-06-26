@@ -70,7 +70,7 @@ public class RoomController {
      
         Reservation newReservation = reservationRepository.save(reservation);
         
-        return ResponseEntity.ok().body(room.get().addReservation(newReservation));
+        return ResponseEntity.ok().body(room.get().book(newReservation));
     }
     
     @GetMapping("/{id}/is-available")
@@ -90,5 +90,25 @@ public class RoomController {
         return room.isPresent()
         		? ResponseEntity.ok().body(room.get())
         		: ResponseEntity.notFound().build();
+    }
+    
+    @DeleteMapping("/{id}/{reservationId}")
+    public ResponseEntity<Room> unbookRoom(
+    		@PathVariable(value = "id") long id,
+    		@PathVariable(value = "reservationId") long reservationId) {
+        Optional<Room> room = roomRepository.findById(id);
+        Optional<Reservation> reservation = reservationRepository.findById(reservationId);
+        
+        if(room.isEmpty() || reservation.isEmpty()) {
+        	return ResponseEntity.notFound().build();
+        }
+        
+        if(reservation.get().getRoom().getId() != room.get().getId()) {
+        	return ResponseEntity.unprocessableEntity().build();
+        }
+        
+        reservationRepository.deleteById(reservation.get().getId());
+        
+        return ResponseEntity.ok().body(room.get().unbook(reservation.get()));
     }
 }
