@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -15,7 +16,7 @@ public class Room {
     private String name;
     @OneToMany(mappedBy = "room")
     @JsonManagedReference
-    private List<Reservation> bookings;
+    private List<Reservation> reservations;
 
     public long getId() {
 		return id;
@@ -25,12 +26,12 @@ public class Room {
 		this.id = id;
 	}
     
-    public void setBookings(List<Reservation> bookings) {
-		this.bookings = bookings;
+    public void setReservations(List<Reservation> reservations) {
+		this.reservations = reservations;
 	}
 
-    public List<Reservation> getBookings() {
-		return bookings;
+    public List<Reservation> getReservations() {
+		return reservations;
 	}
 
 	public String getName() {
@@ -40,5 +41,13 @@ public class Room {
 	public void setName(String name) {
 		this.name = name;
 	}
-    
+	
+	public boolean isAvailableForReservation(LocalDate startDate, LocalDate endDate) {
+		return reservations.stream().filter(r -> r.isOverlappingDates(startDate, endDate)).count() == 0;
+	}
+	
+	public Room addReservation(Reservation r) {
+		this.reservations.add(r);
+		return this;
+	}
 }
