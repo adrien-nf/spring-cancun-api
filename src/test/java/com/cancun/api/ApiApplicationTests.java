@@ -7,11 +7,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.cancun.api.config.H2JpaConfig;
 import com.cancun.api.model.Reservation;
 import com.cancun.api.model.Room;
 import com.cancun.api.repository.ReservationRepository;
 import com.cancun.api.repository.RoomRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -21,16 +21,15 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
-@SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
+@SpringBootTest(classes = {ApiApplication.class, H2JpaConfig.class})
 class ApiApplicationTests {
     @Autowired
     private MockMvc mockMvc;
