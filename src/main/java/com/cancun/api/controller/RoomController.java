@@ -11,14 +11,9 @@ import com.cancun.api.repository.ReservationRepository;
 import com.cancun.api.repository.RoomRepository;
 import com.cancun.api.service.RoomService;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequestMapping("/api/rooms")
