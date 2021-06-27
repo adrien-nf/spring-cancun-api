@@ -11,8 +11,14 @@ You may now access the API.
 ## API Documentation
 API documentation is available on my [Stoplight Profile](https://adrien-nf.stoplight.io/docs/cancun-api).
 ## Informations
+### Miscellaneous
+Please note that application.properties keys are not encrypted, for simplicity sake. In an actual project, the file would be encrypted, and usually not on the GitHub.
 ### Database
-The development was done under a MySQL 5.7.24 database. Please note that application.properties keys are not encrypted, for simplicity sake. In an actual project, the file would be encrypted, and usually not on the GitHub.
+The development was done under a MySQL 5.7.24 database.
+### Testing
+The tests are executed on a different database. Indeed, so as not to erase data from your environment, tests are done "in-memory". This means that, while they work, they will not have any repercussion on your database.
+![image](https://user-images.githubusercontent.com/22148893/123548652-f3fc5080-d765-11eb-8f4f-3d1c4dba2101.png)
+
 ## Resolution of the subject
 ### API will be maintained by the hotel’s IT department.
 This is easy to do, as the code is quite clear and clean. The documentation may help newcomers take their marks.
