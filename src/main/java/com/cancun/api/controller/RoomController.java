@@ -78,7 +78,7 @@ public class RoomController {
         		: ResponseEntity.notFound().build();
     }
     
-    @DeleteMapping("/{id}/{reservationId}")
+    @DeleteMapping("/{id}/reservations/{reservationId}")
     public ResponseEntity<Room> unbookRoom(
     		@PathVariable(value = "id") long id,
     		@PathVariable(value = "reservationId") long reservationId) {
@@ -98,7 +98,7 @@ public class RoomController {
         return ResponseEntity.ok().body(room.get().unbook(reservation.get()));
     }
     
-    @PatchMapping("/{id}/{reservationId}")
+    @PatchMapping("/{id}/reservations/{reservationId}")
     public ResponseEntity<Room> rebookRoom(
     		@PathVariable(value = "id") long id,
     		@PathVariable(value = "reservationId") long reservationId,

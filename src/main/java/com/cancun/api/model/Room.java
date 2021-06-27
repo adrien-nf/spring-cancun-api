@@ -52,7 +52,9 @@ public class Room {
 	}
 	
 	public Room unbook(Reservation r) {
-		this.reservations.remove(reservations.indexOf(r));
+		int index = reservations.indexOf(r);
+		if(index != -1)			
+			this.reservations.remove(index);
 		return this;
 	}
 	

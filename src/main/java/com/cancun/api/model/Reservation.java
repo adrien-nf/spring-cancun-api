@@ -11,7 +11,7 @@ import com.sun.istack.NotNull;
 @Table(name = "reservations")
 public class Reservation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
     @ManyToOne(cascade = CascadeType.PERSIST)
