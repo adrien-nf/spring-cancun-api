@@ -34,7 +34,7 @@ public class RoomController {
         return roomRepository.findAll();
     }
 
-    @PostMapping("/{id}/book")
+    @PostMapping("/{id}/reservations")
     public ResponseEntity<Room> bookRoom(
     		@PathVariable(value = "id") long id,
     		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(value = "start_date") LocalDate startDate, 

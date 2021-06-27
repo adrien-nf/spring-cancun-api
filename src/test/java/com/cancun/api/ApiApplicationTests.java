@@ -76,7 +76,7 @@ class ApiApplicationTests {
 		String dateInTenDays = LocalDate.now().plusDays(10).toString();
 
 		mockMvc.perform(
-				post("/api/rooms/"+room.getId()+"/book")
+				post("/api/rooms/"+room.getId()+"/reservations")
 				.param("start_date", dateInOneDay)
 				.param("end_date", dateInTenDays))
 		.andExpect(status().isUnprocessableEntity());
@@ -88,7 +88,7 @@ class ApiApplicationTests {
 		String dateInSixtyOneDays = LocalDate.now().plusDays(61).toString();
 
 		mockMvc.perform(
-				post("/api/rooms/"+room.getId()+"/book")
+				post("/api/rooms/"+room.getId()+"/reservations")
 				.param("start_date", dateInSixtyDays)
 				.param("end_date", dateInSixtyOneDays))
 		.andExpect(status().isUnprocessableEntity());
@@ -100,7 +100,7 @@ class ApiApplicationTests {
 		String dateInOneDay = LocalDate.now().plusDays(1).toString();
 		
 		mockMvc.perform(
-				post("/api/rooms/"+room.getId()+"/book")
+				post("/api/rooms/"+room.getId()+"/reservations")
 				.param("start_date", dateToday)
 				.param("end_date", dateInOneDay))
 		.andExpect(status().isUnprocessableEntity());
@@ -112,7 +112,7 @@ class ApiApplicationTests {
 		String dateInTwoDays = LocalDate.now().plusDays(2).toString();
 		
 		mockMvc.perform(
-				post("/api/rooms/"+room.getId()+"/book")
+				post("/api/rooms/"+room.getId()+"/reservations")
 				.param("start_date", dateInTwoDays)
 				.param("end_date", dateInOneDay))
 		.andExpect(status().isUnprocessableEntity());
@@ -124,7 +124,7 @@ class ApiApplicationTests {
 		String dateInSeventeenDays = LocalDate.now().plusDays(17).toString();
 		
 		mockMvc.perform(
-				post("/api/rooms/"+room.getId()+"/book")
+				post("/api/rooms/"+room.getId()+"/reservations")
 				.param("start_date", dateInFifteenDays)
 				.param("end_date", dateInSeventeenDays)
 				)
