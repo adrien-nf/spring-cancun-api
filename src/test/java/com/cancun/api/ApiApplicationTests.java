@@ -136,12 +136,12 @@ class ApiApplicationTests {
 	@Test
 	void testUserCanCheckRoomAvailability() throws Exception {
 		// Room already booked
-		String dateInOneDay = LocalDate.now().plusDays(1).toString();
-		String dateInTwoDays = LocalDate.now().plusDays(2).toString();
+		// Get a random reservation
+		Reservation reservationAlreadyBooked = room.getReservations().get((new Random()).nextInt(room.getReservations().size()));
 
 		mockMvc.perform(get("/api/rooms/"+room.getId()+"/is-available")
-				.param("start_date", dateInOneDay)
-				.param("end_date", dateInTwoDays)
+				.param("start_date", reservationAlreadyBooked.getStartDate().toString())
+				.param("end_date", reservationAlreadyBooked.getEndDate().toString())
 				)
 		.andExpect(status().isOk())
         .andExpect(content().string("false"));
