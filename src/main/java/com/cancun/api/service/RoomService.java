@@ -17,13 +17,13 @@ public class RoomService {
 	}
 	
 	private static boolean areDatesCorrect(LocalDate startDate, LocalDate endDate) {
-        LocalDate todayDate = LocalDate.now();
-        long reservationDuration = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-        long daysBeforeReservationStarts = ChronoUnit.DAYS.between(todayDate, startDate);
+		LocalDate todayDate = LocalDate.now();
+		long reservationDuration = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+		long daysBeforeReservationStarts = ChronoUnit.DAYS.between(todayDate, startDate);
 
 		return reservationDuration <= MAX_RESERVATION_DAYS
-        		&& daysBeforeReservationStarts >= MIN_DAYS_BEFORE_RESERVATION
-        		&& daysBeforeReservationStarts <= MAX_DAYS_BEFORE_RESERVATION
-        		&& startDate.isBefore(endDate);
+				&& daysBeforeReservationStarts >= MIN_DAYS_BEFORE_RESERVATION
+				&& daysBeforeReservationStarts <= MAX_DAYS_BEFORE_RESERVATION
+				&& startDate.isBefore(endDate);
 	}
 }

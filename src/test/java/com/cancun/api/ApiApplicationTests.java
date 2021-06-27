@@ -31,44 +31,44 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(classes = {ApiApplication.class, H2JpaConfig.class})
 class ApiApplicationTests {
-    @Autowired
-    private MockMvc mockMvc;
 	@Autowired
-    private RoomRepository roomRepository;
+	private MockMvc mockMvc;
 	@Autowired
-    private ReservationRepository reservationRepository;
+	private RoomRepository roomRepository;
+	@Autowired
+	private ReservationRepository reservationRepository;
 	
 	private Room room;
 	
-    @BeforeEach
-    public void initEach() {
-    	System.out.println("Starting tests...");
+	@BeforeEach
+	public void initEach() {
+		System.out.println("Starting tests...");
 
-    	LocalDate dateToday = LocalDate.now();
-    	
-    	// Create a room
-    	Room newRoom = new Room();
-    	newRoom.setName("Suite Deluxe");
-    	room = roomRepository.save(newRoom);
+		LocalDate dateToday = LocalDate.now();
+		
+		// Create a room
+		Room newRoom = new Room();
+		newRoom.setName("Suite Deluxe");
+		room = roomRepository.save(newRoom);
 
-    	// Add 4 reservations to this room
-    	ArrayList<Reservation> setupReservations = new ArrayList();
-    	setupReservations.add(new Reservation(room, dateToday.plusDays(1), dateToday.plusDays(2)));
-    	setupReservations.add(new Reservation(room, dateToday.plusDays(3), dateToday.plusDays(5)));
-    	setupReservations.add(new Reservation(room, dateToday.plusDays(8), dateToday.plusDays(10)));
-    	setupReservations.add(new Reservation(room, dateToday.plusDays(13), dateToday.plusDays(13)));
+		// Add 4 reservations to this room
+		ArrayList<Reservation> setupReservations = new ArrayList();
+		setupReservations.add(new Reservation(room, dateToday.plusDays(1), dateToday.plusDays(2)));
+		setupReservations.add(new Reservation(room, dateToday.plusDays(3), dateToday.plusDays(5)));
+		setupReservations.add(new Reservation(room, dateToday.plusDays(8), dateToday.plusDays(10)));
+		setupReservations.add(new Reservation(room, dateToday.plusDays(13), dateToday.plusDays(13)));
 
-    	setupReservations.forEach(reservation -> {
-    		room.book(reservation);
-        	reservationRepository.save(reservation);    		
-    	});
-    }
-    
-    @AfterEach
-    public void cleanEach() {
-    	reservationRepository.deleteAll();
-    	roomRepository.deleteAll();
-    }
+		setupReservations.forEach(reservation -> {
+			room.book(reservation);
+			reservationRepository.save(reservation);    		
+		});
+	}
+	
+	@AfterEach
+	public void cleanEach() {
+		reservationRepository.deleteAll();
+		roomRepository.deleteAll();
+	}
 	
 	@Test
 	void testReservationIsMaximumThreeDaysLong() throws Exception {
@@ -143,7 +143,7 @@ class ApiApplicationTests {
 				.param("end_date", reservationAlreadyBooked.getEndDate().toString())
 				)
 		.andExpect(status().isOk())
-        .andExpect(content().string("false"));
+		.andExpect(content().string("false"));
 		
 		// Room is available for booking
 		String dateInTwentyDay = LocalDate.now().plusDays(20).toString();
@@ -154,7 +154,7 @@ class ApiApplicationTests {
 				.param("end_date", dateInTwentyTwoDays)
 				)
 		.andExpect(status().isOk())
-        .andExpect(content().string("true"));
+		.andExpect(content().string("true"));
 	}
 
 	@Test

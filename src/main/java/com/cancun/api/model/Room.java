@@ -11,32 +11,32 @@ import java.util.List;
 @Entity
 @Table(name = "rooms")
 public class Room {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @Column
-    private String name;
-    @OneToMany(mappedBy = "room")
-    @JsonManagedReference
-    private List<Reservation> reservations;
-    
-    public Room() {
-    	setReservations((new ArrayList<Reservation>()));
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
+	@Column
+	private String name;
+	@OneToMany(mappedBy = "room")
+	@JsonManagedReference
+	private List<Reservation> reservations;
+	
+	public Room() {
+		setReservations((new ArrayList<Reservation>()));
 	}
-    
-    public long getId() {
+	
+	public long getId() {
 		return id;
 	}
 
-    public void setId(long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
-    
-    public void setReservations(List<Reservation> reservations) {
+	
+	public void setReservations(List<Reservation> reservations) {
 		this.reservations = reservations;
 	}
 
-    public List<Reservation> getReservations() {
+	public List<Reservation> getReservations() {
 		return reservations;
 	}
 

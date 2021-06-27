@@ -10,33 +10,33 @@ import com.sun.istack.NotNull;
 @Entity
 @Table(name = "reservations")
 public class Reservation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "room_id", nullable = false)
-    @JsonBackReference
-    @NotNull
-    private Room room;
-    
-    @Column(nullable = false)
-    private LocalDate startDate;
-    
-    @Column(nullable = false)
-    private LocalDate endDate;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long id;
 	
-    public Reservation() {
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "room_id", nullable = false)
+	@JsonBackReference
+	@NotNull
+	private Room room;
 	
-    }
-    
-    public Reservation(Room room, LocalDate startDate, LocalDate endDate) {
-    	setRoom(room);
-    	setStartDate(startDate);
-    	setEndDate(endDate);
+	@Column(nullable = false)
+	private LocalDate startDate;
+	
+	@Column(nullable = false)
+	private LocalDate endDate;
+	
+	public Reservation() {
+	
 	}
-    
-    public long getId() {
+	
+	public Reservation(Room room, LocalDate startDate, LocalDate endDate) {
+		setRoom(room);
+		setStartDate(startDate);
+		setEndDate(endDate);
+	}
+	
+	public long getId() {
 		return id;
 	}
 	
