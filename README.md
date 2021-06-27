@@ -9,4 +9,4 @@ Please note that this API was built using Maven 3.8.1, and JDK 11.0.11.
 
 You may now access the API.
 ## API Documentation
-API documentation is available on my [Stoplight Profile](https://adrien-nf.stoplight.io/docs/cancun-api)
+API documentation is available on my [Stoplight Profile](https://adrien-nf.stoplight.io/docs/cancun-api).
