@@ -5,19 +5,25 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "rooms")
 public class Room {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column
     private String name;
     @OneToMany(mappedBy = "room")
     @JsonManagedReference
     private List<Reservation> reservations;
-
+    
+    public Room() {
+    	setReservations((new ArrayList<Reservation>()));
+	}
+    
     public long getId() {
 		return id;
 	}

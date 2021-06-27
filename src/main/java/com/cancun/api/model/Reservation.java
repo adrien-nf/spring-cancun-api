@@ -14,7 +14,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "room_id", nullable = false)
     @JsonBackReference
     @NotNull
@@ -26,6 +26,16 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDate endDate;
 	
+    public Reservation() {
+	
+    }
+    
+    public Reservation(Room room, LocalDate startDate, LocalDate endDate) {
+    	setRoom(room);
+    	setStartDate(startDate);
+    	setEndDate(endDate);
+	}
+    
     public long getId() {
 		return id;
 	}

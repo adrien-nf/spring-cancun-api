@@ -49,10 +49,7 @@ public class RoomController {
         	return ResponseEntity.unprocessableEntity().build();
         }
         
-        Reservation reservation = new Reservation();
-        reservation.setRoom(room.get());
-        reservation.setStartDate(startDate);
-        reservation.setEndDate(endDate);
+        Reservation reservation = new Reservation(room.get(), startDate, endDate);
      
         Reservation newReservation = reservationRepository.save(reservation);
         

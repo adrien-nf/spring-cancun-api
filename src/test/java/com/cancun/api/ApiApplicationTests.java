@@ -1,14 +1,11 @@
 package com.cancun.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import com.cancun.api.model.Reservation;
 import com.cancun.api.model.Room;
@@ -18,14 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import java.time.LocalDate;
-import java.time.temporal.TemporalUnit;
-import java.util.Calendar;
-
 import static org.hamcrest.Matchers.*;
-import org.junit.jupiter.api.Assertions;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Random;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -33,113 +30,160 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 class ApiApplicationTests {
     @Autowired
     private MockMvc mockMvc;
-    
-    @BeforeAll
-    public void initAll() {
+	@Autowired
+    private RoomRepository roomRepository;
+	@Autowired
+    private ReservationRepository reservationRepository;
+	
+	private Room room;
+	
+    @BeforeEach
+    public void initEach() {
     	System.out.println("Starting tests...");
+
+    	LocalDate dateToday = LocalDate.now();
+    	
+    	// Create a room
+    	Room newRoom = new Room();
+    	newRoom.setName("Suite Deluxe");
+    	room = roomRepository.save(newRoom);
+
+    	// Add 4 reservations to this room
+    	ArrayList<Reservation> setupReservations = new ArrayList();
+    	setupReservations.add(new Reservation(room, dateToday.plusDays(1), dateToday.plusDays(2)));
+    	setupReservations.add(new Reservation(room, dateToday.plusDays(3), dateToday.plusDays(5)));
+    	setupReservations.add(new Reservation(room, dateToday.plusDays(8), dateToday.plusDays(10)));
+    	setupReservations.add(new Reservation(room, dateToday.plusDays(13), dateToday.plusDays(13)));
+
+    	setupReservations.forEach(reservation -> {
+    		room.book(reservation);
+        	reservationRepository.save(reservation);    		
+    	});
     }
     
-	@Test
-	public void contextLoads() {
-		
-	}
+    @AfterEach
+    public void cleanEach() {
+    	reservationRepository.deleteAll();
+    	roomRepository.deleteAll();
+    }
 	
 	@Test
 	void testReservationIsMaximumThreeDaysLong() throws Exception {
-		LocalDate dateInOneDay = LocalDate.now().plusDays(1);
-		LocalDate dateInTenDays = LocalDate.now().plusDays(10);
+		String dateInOneDay = LocalDate.now().plusDays(1).toString();
+		String dateInTenDays = LocalDate.now().plusDays(10).toString();
 
 		mockMvc.perform(
-				post("/api/rooms/1/book")
-				.param("start_date", dateInOneDay.toString())
-				.param("end_date", dateInTenDays.toString()))
+				post("/api/rooms/"+room.getId()+"/book")
+				.param("start_date", dateInOneDay)
+				.param("end_date", dateInTenDays))
 		.andExpect(status().isUnprocessableEntity());
 	}
 
 	@Test
 	void testReservationIsMaximumThirtyDaysInAdvance() throws Exception {
-		LocalDate dateInSixtyDays = LocalDate.now().plusDays(60);
-		LocalDate dateInSixtyOneDays = LocalDate.now().plusDays(61);
+		String dateInSixtyDays = LocalDate.now().plusDays(60).toString();
+		String dateInSixtyOneDays = LocalDate.now().plusDays(61).toString();
 
 		mockMvc.perform(
-				post("/api/rooms/1/book")
-				.param("start_date", dateInSixtyDays.toString())
-				.param("end_date", dateInSixtyOneDays.toString()))
+				post("/api/rooms/"+room.getId()+"/book")
+				.param("start_date", dateInSixtyDays)
+				.param("end_date", dateInSixtyOneDays))
 		.andExpect(status().isUnprocessableEntity());
 	}
 
 	@Test
 	void testReservationIsMinimumTomorrow() throws Exception {
-		LocalDate dateToday = LocalDate.now();
-		LocalDate dateInOneDay = LocalDate.now().plusDays(1);
+		String dateToday = LocalDate.now().toString();
+		String dateInOneDay = LocalDate.now().plusDays(1).toString();
 		
 		mockMvc.perform(
-				post("/api/rooms/1/book")
-				.param("start_date", dateToday.toString())
-				.param("end_date", dateInOneDay.toString()))
+				post("/api/rooms/"+room.getId()+"/book")
+				.param("start_date", dateToday)
+				.param("end_date", dateInOneDay))
 		.andExpect(status().isUnprocessableEntity());
 	}
 
 	@Test
 	void testStartDateIsBeforeEndDate() throws Exception {
-		LocalDate dateInOneDay = LocalDate.now().plusDays(1);
-		LocalDate dateInTwoDays = LocalDate.now().plusDays(2);
+		String dateInOneDay = LocalDate.now().plusDays(1).toString();
+		String dateInTwoDays = LocalDate.now().plusDays(2).toString();
 		
 		mockMvc.perform(
-				post("/api/rooms/1/book")
-				.param("start_date", dateInTwoDays.toString())
-				.param("end_date", dateInOneDay.toString()))
+				post("/api/rooms/"+room.getId()+"/book")
+				.param("start_date", dateInTwoDays)
+				.param("end_date", dateInOneDay))
 		.andExpect(status().isUnprocessableEntity());
 	}
 	
 	@Test
 	void testUserCanPlaceReservation() throws Exception {
-		// Calendar's dates
-		Calendar tomorrowDate = Calendar.getInstance(); 
-		tomorrowDate.add(Calendar.DATE, 1);
-		Calendar overmorrowDate = Calendar.getInstance();
-		overmorrowDate.add(Calendar.DATE, 2);
+		String dateInFifteenDays = LocalDate.now().plusDays(15).toString();
+		String dateInSeventeenDays = LocalDate.now().plusDays(17).toString();
 		
-		Reservation reservationToPost = new Reservation();
-		
-		MvcResult result = mockMvc.perform(
-				post("/api/reservations")
-				.contentType(MediaType.APPLICATION_JSON)
-		        .content(asJsonString(reservationToPost)))
-		.andExpect(status().isOk()).andReturn();
-
-		Reservation returnedReservation = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Reservation.class);
-		
-		Assertions.assertEquals(reservationToPost.getStartDate(), returnedReservation.getStartDate());
+		mockMvc.perform(
+				post("/api/rooms/"+room.getId()+"/book")
+				.param("start_date", dateInFifteenDays)
+				.param("end_date", dateInSeventeenDays)
+				)
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.reservations", hasSize(room.getReservations().size() + 1)));
 	}
 	
 	@Test
 	void testUserCanCheckRoomAvailability() throws Exception {
-		mockMvc.perform(get("/api/rooms/1/is-available"))
+		// Room already booked
+		String dateInOneDay = LocalDate.now().plusDays(1).toString();
+		String dateInTwoDays = LocalDate.now().plusDays(2).toString();
+
+		mockMvc.perform(get("/api/rooms/"+room.getId()+"/is-available")
+				.param("start_date", dateInOneDay)
+				.param("end_date", dateInTwoDays)
+				)
 		.andExpect(status().isOk())
-		.andExpect(jsonPath("$.id", is(1)));
+        .andExpect(content().string("false"));
+		
+		// Room is available for booking
+		String dateInTwentyDay = LocalDate.now().plusDays(20).toString();
+		String dateInTwentyTwoDays = LocalDate.now().plusDays(22).toString();
+
+		mockMvc.perform(get("/api/rooms/"+room.getId()+"/is-available")
+				.param("start_date", dateInTwentyDay)
+				.param("end_date", dateInTwentyTwoDays)
+				)
+		.andExpect(status().isOk())
+        .andExpect(content().string("true"));
 	}
 
 	@Test
 	void testUserCanCancelReservation() throws Exception {
-		mockMvc.perform(delete("/api/rooms/1/reservations/1"))
-		.andExpect(status().isOk());
+		// Get a random reservation
+		Reservation reservationToBeDeleted = room.getReservations().get((new Random()).nextInt(room.getReservations().size()));
+		
+		mockMvc.perform(delete("/api/rooms/"+room.getId()+"/reservations/"+reservationToBeDeleted.getId()))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.reservations", hasSize(room.getReservations().size() - 1)));
 	}
 	
 	@Test
 	void testUserCanUpdateReservation() throws Exception {
-		mockMvc.perform(put("/api/rooms/1/reservations/1"))
-		.andExpect(status().isOk());
+		// Get a random reservation
+		Reservation reservationToBeUpdated = room.getReservations().get((new Random()).nextInt(room.getReservations().size()));
+		
+		String newStartDate = LocalDate.now().plusDays(25).toString();
+		String newEndDate = LocalDate.now().plusDays(27).toString();
+		
+		mockMvc.perform(
+				patch("/api/rooms/"+room.getId()+"/reservations/"+reservationToBeUpdated.getId())
+				.param("start_date", newStartDate)
+				.param("end_date", newEndDate)
+				)
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$.reservations", hasSize(room.getReservations().size())))
+		.andExpect(content().string(containsString("\"startDate\":\""+newStartDate+"\"")))
+		.andExpect(content().string(containsString("\"endDate\":\""+newEndDate+"\"")));
 	}
-	
-	static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
