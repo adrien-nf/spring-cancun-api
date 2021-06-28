@@ -51,3 +51,8 @@ This is done via the ``DELETE: /api/rooms/{roomId}/reservations/{reservationId}`
 This is done via the ``PATCH: /api/rooms/{roomId}/reservations/{reservationId}`` endpoint. Two parameters are mandatory: start_date and end_date.
 ### To simplify the API is insecure.
 No authentication has been made for this API. You may simply request, and anyone may update or delete anyone else's reservations.
+### Go even further
+To go a bit further, we might simply add a message body to the errors returned in the controller. This might be an easy improvement to do. For simplicity sake, I did not add messages in this project, that would be very simple to achieve:
+```
+return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to perform this action.");
+```
